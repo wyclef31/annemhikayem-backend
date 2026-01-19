@@ -44,7 +44,7 @@ app.post("/paytr/get-token", async (req, res) => {
       return res.status(400).json({ ok: false, error: "Eksik alan var (email, payment_amount, user_name, user_address, user_phone)." });
     }
 
-    const merchant_oid = "OID_" + Date.now();
+    const merchant_oid = "OID" + Date.now();
 
     const user_ip = (req.headers["x-forwarded-for"] || req.socket.remoteAddress || "")
       .toString()
