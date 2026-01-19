@@ -56,7 +56,21 @@ app.post("/paytr/get-token", async (req, res) => {
     const no_installment = "0";
     const max_installment = "0";
 
-    const user_basket = Buffer.from(JSON.stringify(basket_items || [["Sipariş", String(payment_amount), 1]])).toString("base64");
+    const normalizedBasket = Array.isArray(basket_items) && basket_items.length
+  ? basket_items.map((it) => {
+      // Eğer zaten ["ad","fiyat",adet] formatındaysa dokunma
+      if (Array.isArray(it)) return it;
+
+      // Object geliyorsa dönüştür
+      const name = String(it.name || it.title || "Urun");
+      const price = String(it.price || it.amount || payment_amount);
+      const qty = Number(it.qty || it.quantity || 1);
+      return [name, price, qty];
+    })
+  : [["Siparis", String(payment_amount), 1]];
+
+const user_basket = Buffer.from(JSON.stringify(normalizedBasket)).toString("base64");
+
 
     const site_url = process.env.SITE_URL || "";
     const merchant_ok_url = `${site_url}/payment-success.html`;
